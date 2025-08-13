@@ -1,23 +1,23 @@
 # Constraint & Strategy Mismatch
 
-**Root Cause:**  
-A placement strategy conflicts with a placement constraint, making it impossible to place more than the first task.  
-Example: Constraint requires `ecs.instance-type == t2.micro` and a strategy tries to spread tasks across instance types. The first task lands correctly, but the next cannot satisfy both rules.
+**Root Cause**  
+A placement strategy conflicts with a placement constraint. For example, the constraint requires `ecs.instance-type == t2.micro`, but the strategy is set to spread across instance types. ECS places one task correctly, then fails to place the second task because of the conflict.
 
-**Placement Strategy / Constraints:**  
-Spread across instance types + constraint on instance type or custom attribute.
+**Placement Strategy / Constraints**  
+Spread across instance types alongside a constraint on instance type or custom attributes.
 
-**Workload Type:**  
-ECS on EC2 (cluster with mixed instance types).
+**Workload Type**  
+ECS on EC2 (clusters with mixed instance types).
 
-**Symptoms:**  
-- First task runs, others remain in `PENDING`
-- Event: "no container instance met all of its requirements"
+**Symptoms**  
+- One task starts successfully, others stay in `PENDING`.  
+- Event: “no container instance met all of its requirements”.
 
-**Resolution:**  
-- Align placement strategy with constraints (e.g., switch to `binpack`)
-- Ensure enough matching instances exist to satisfy spread constraints
+**Resolution**  
+Align strategy and constraints. For example, switch to `binpack` to pack multiple tasks onto the matching instance.
 
 **References:**  
-- [AWS ECS – Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html)  
-- [Stack Overflow – ECS Task Stuck Due to Constraint/Strategy Conflict](https://stackoverflow.com/questions/73513296/ecs-not-respecting-task-placement-constraint)
+- Official AWS ECS guide on placement constraints:  
+  https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html  
+- Real-world example on Stack Overflow:  
+  https://stackoverflow.com/questions/73513296/ecs-not-respecting-task-placement-constraint  
