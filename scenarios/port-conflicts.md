@@ -1,23 +1,25 @@
 # Host Port Conflicts
 
-**Root Cause:**  
-Tasks use a fixed host port. ECS can only run one task per instance using that port. If more tasks need to run but the port is already taken, placement fails with `RESOURCE:PORTS`.
+**Root Cause**  
+Using a fixed host port in the task definition can prevent new tasks from being placed if that port is already in use on all instances. ECS returns a `RESOURCE:PORTS` failure.
 
-**Placement Strategy / Constraints:**  
-Any; failure occurs when static host ports are in use.
+**Placement Strategy / Constraints**  
+Any – failure stems from static host port usage.
 
-**Workload Type:**  
-ECS on EC2 with bridge or host networking (or awsvpc with fixed hostPort).
+**Workload Type**  
+ECS on EC2 using bridge/host networking or awsvpc with fixed hostPort.
 
-**Symptoms:**  
-- Tasks remain in `PENDING`
-- Event: "closest matching container-instance is already using a port required by your task"
+**Symptoms**  
+- Tasks remain in `PENDING`.  
+- Event: “closest matching container-instance is already using a port required by your task”.
 
-**Resolution:**  
-- Use dynamic port mapping
-- Attach to a load balancer for traffic routing
-- Add more instances if static ports are unavoidable
+**Resolution**  
+Use dynamic port mapping and load balancers to avoid port conflicts, or use a load balancer-backed service.
 
 **References:**  
-- [AWS ECS – Service Load Balancing](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-load-balancing.html)  
-- [AWS re:Post – Port Already in Use Placement Failures](https://repost.aws/knowledge-center/ecs-service-task-fails-resource-ports)
+- AWS port mapping documentation:  
+  https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PortMapping.html  
+- Community case on Stack Overflow:  
+  https://stackoverflow.com/questions/60915026/aws-ecs-task-failed-with-reason-resourceports  
+- Deployment stack issue and resolution:  
+  https://serverfault.com/questions/898952/aws-ecs-unable-to-place-task  
